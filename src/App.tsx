@@ -1,10 +1,31 @@
-import React, { useCallback } from "react";
+import React, { useState } from "react";
 import { useAuth0 } from "./react-auth0-spa";
-import { PageHeader, Button, Spin, Card, Layout } from "antd";
+import { PageHeader, Button, Spin, Card, Table } from "antd";
 import "antd/dist/antd.css";
 import styled from "styled-components";
+import CreateModalButton from "./components/CreateGameButton";
+import io from "socket.io-client";
 
-const { Footer } = Layout;
+const socket = io.connect("http://localhost:8000");
+
+const columns = [
+  {
+    title: "Name",
+    dataIndex: "name",
+    key: "name"
+  },
+  {
+    title: "Players",
+    dataIndex: "players",
+    key: "players",
+    render: (players: string[]) => players.join(", ")
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status"
+  }
+];
 
 const Centered = styled.div`
   display: flex;
@@ -13,6 +34,10 @@ const Centered = styled.div`
 `;
 
 function App() {
+  const [games, setGames] = useState([] as Record<string, any>[]);
+  socket.on("pushGames", (currentGames: Record<string, any>[]) => {
+    setGames(currentGames);
+  });
   const { isAuthenticated, loginWithRedirect, logout, loading } = useAuth0();
 
   if (loading) {
@@ -44,17 +69,20 @@ function App() {
   }
 
   return (
-    <PageHeader
-      ghost={false}
-      onBack={() => window.history.back()}
-      title="Title"
-      subTitle="This is a subtitle"
-      extra={[
-        <Button key={1} onClick={() => logout()} type="primary">
-          Log Out
-        </Button>
-      ]}
-    ></PageHeader>
+    <>
+      <PageHeader
+        ghost={false}
+        title="Games"
+        extra={[
+          <Button key={1} onClick={() => logout()} type="primary">
+            Log Out
+          </Button>
+        ]}
+      >
+        <Table columns={columns} dataSource={games} />
+      </PageHeader>
+      <CreateModalButton socket={socket} />
+    </>
   );
 }
 

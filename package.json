@@ -1,26 +1,44 @@
 {
-  "scripts": {
-    "dev": "next",
-    "build": "next build",
-    "start": "next start"
-  },
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "@okta/okta-auth-js": "^3.0.0",
-    "@okta/okta-react": "^3.0.0",
+    "@auth0/auth0-spa-js": "^1.6.5",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/history": "^4.7.5",
+    "@types/styled-components": "^5.0.1",
     "antd": "^4.0.4",
-    "material-ui": "^0.20.2",
-    "next": "^9.3.1",
-    "prettier": "^2.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
-    "socket.io-client": "^2.3.0",
+    "react-scripts": "3.4.1",
     "styled-components": "^5.0.1",
     "typescript": "^3.8.3"
   },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "devDependencies": {
-    "@types/node": "^12.12.31",
-    "@types/react": "^16.9.26",
     "@typescript-eslint/eslint-plugin": "^2.25.0",
     "@typescript-eslint/parser": "^2.25.0",
     "eslint": "^6.8.0",

@@ -1,10 +1,23 @@
 import React, { useState } from "react";
 import { useAuth0 } from "./react-auth0-spa";
-import { PageHeader, Button, Spin, Card, Table } from "antd";
+import { PageHeader, Button, Spin, Table } from "antd";
 import "antd/dist/antd.css";
 import styled from "styled-components";
-import CreateModalButton from "./components/CreateGameButton";
+import CreateGameButton from "./components/CreateGameButton";
 import io from "socket.io-client";
+import { createStore } from "redux";
+import todoApp from "./state/reducers";
+import { setUser } from "./state/actions";
+import LoginModal from "./components/LoginModal";
+
+// define store
+const store = createStore(todoApp);
+// Log the initial state
+console.log(store.getState());
+
+// Every time the state changes, log it
+// Note that subscribe() returns a function for unregistering the listener
+store.subscribe(() => console.log(store.getState()));
 
 const socket = io.connect("http://localhost:8000");
 
@@ -24,6 +37,11 @@ const columns = [
     title: "Status",
     dataIndex: "status",
     key: "status"
+  },
+  {
+    title: "Owner",
+    dataIndex: "owner",
+    key: "owner"
   }
 ];
 
@@ -38,7 +56,18 @@ function App() {
   socket.on("pushGames", (currentGames: Record<string, any>[]) => {
     setGames(currentGames);
   });
-  const { isAuthenticated, loginWithRedirect, logout, loading } = useAuth0();
+
+  const {
+    isAuthenticated,
+    loginWithRedirect,
+    logout,
+    loading,
+    user
+  } = useAuth0();
+
+  if (user) {
+    store.dispatch(setUser(user));
+  }
 
   if (loading) {
     return (
@@ -49,39 +78,20 @@ function App() {
   }
 
   if (!isAuthenticated) {
-    return (
-      <Centered>
-        <Card title="You are unauthenticated" style={{ width: 300 }}>
-          <p>
-            Please click the button below to log in. (Powered by&nbsp;
-            <a href="https://auth0.com/">auth0</a>.)
-          </p>
-          <p>
-            <div>
-              <Button type="primary" onClick={() => loginWithRedirect()}>
-                Log In
-              </Button>
-            </div>
-          </p>
-        </Card>
-      </Centered>
-    );
+    return <LoginModal callback={loginWithRedirect} />;
   }
+
+  const LogoutButton = () => (
+    <Button key={1} onClick={() => logout()} type="primary">
+      Log Out
+    </Button>
+  );
 
   return (
     <>
-      <PageHeader
-        ghost={false}
-        title="Games"
-        extra={[
-          <Button key={1} onClick={() => logout()} type="primary">
-            Log Out
-          </Button>
-        ]}
-      >
-        <Table columns={columns} dataSource={games} />
-      </PageHeader>
-      <CreateModalButton socket={socket} />
+      <PageHeader ghost={false} title="Games" extra={[LogoutButton]} />
+      <Table columns={columns} dataSource={games} />
+      <CreateGameButton socket={socket} store={store} />
     </>
   );
 }

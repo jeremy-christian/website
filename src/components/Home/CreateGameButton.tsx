@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from "react";
-import { ApplicationStore } from "../state/types";
+import { ApplicationStore } from "../../state/types";
 import { Modal, Button, Input } from "antd";
 
 const CreateGameButton = ({
   socket,
-  store
+  store,
 }: {
   socket: SocketIOClient.Socket;
   store: ApplicationStore;
@@ -23,7 +23,7 @@ const CreateGameButton = ({
 
   const [newGameName, setNewGameName] = useState("");
 
-  const onChange = useCallback(e => setNewGameName(e.target.value), []);
+  const onChange = useCallback((e) => setNewGameName(e.target.value), []);
   const onSubmit = useCallback(() => {
     console.log("emitting", newGameName);
     socket.emit("addGame", { name: newGameName, user });
@@ -33,10 +33,10 @@ const CreateGameButton = ({
   return (
     <div>
       <Button type="primary" onClick={showModal}>
-        Open Modal
+        Add Game
       </Button>
       <Modal
-        title="Basic Modal"
+        title="Create New Game"
         visible={visible}
         onOk={onSubmit}
         onCancel={handleCancel}

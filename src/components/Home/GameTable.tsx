@@ -1,11 +1,31 @@
 import React from "react";
-import { Table } from "antd";
-import { ApplicationStore } from "../../state/types";
+import { Table, Button } from "antd";
+import { ApplicationState, ApplicationGame } from "../../state/types";
+import { connect } from "react-redux";
+import { setPage, setActiveGame } from "../../state/actions";
 
-const ActionButton = (_: any, record: object) => {
-  console.log(record);
-  return <p>test</p>;
+const ActionButton = ({
+  onClick,
+  record,
+}: {
+  onClick: (record: object) => void;
+  record: object;
+}) => {
+  return <Button onClick={() => onClick(record)}>View</Button>;
 };
+
+const mapDispatchToProps = (dispatch: any) => ({
+  onClick: (record: any) => {
+    dispatch(setActiveGame(record));
+    dispatch(setPage("lobby"));
+  },
+});
+
+const ConnectedButton = connect(null, mapDispatchToProps)(ActionButton);
+
+const RenderConnectedButton = (record: object) => (
+  <ConnectedButton record={record} />
+);
 
 const columns = [
   {
@@ -15,13 +35,22 @@ const columns = [
   },
   {
     title: "Action",
-    render: ActionButton,
+    render: RenderConnectedButton,
   },
 ];
 
-const GameTable = ({ store }: { store: ApplicationStore }) => {
-  const { games } = store.getState();
-  return <Table columns={columns} dataSource={games} />;
+const mapStateToProps = (state: ApplicationState) => {
+  return {
+    games: state.games,
+  };
 };
 
-export default GameTable;
+const ConnectedTable = ({ games }: { games: ApplicationGame[] }) => {
+  return (
+    <>
+      <Table columns={columns} dataSource={games} />
+    </>
+  );
+};
+
+export default connect(mapStateToProps)(ConnectedTable);

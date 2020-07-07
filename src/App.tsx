@@ -11,6 +11,7 @@ import LoginModal from "./components/LoginModal";
 import { Centered } from "./components/ApplicationLayout";
 import Home from "./components/Home/Home";
 import { ApplicationGame } from "./state/types";
+import { Provider } from "react-redux";
 // define store
 const store = createStore(reducers);
 // Log the initial state
@@ -60,10 +61,10 @@ function App() {
   );
 
   return (
-    <>
+    <Provider store={store}>
       <PageHeader ghost={false} title="Games" extra={[LogoutButton]} />
-      <Home store={store} socket={socket} />
-    </>
+      <Home socket={socket} />
+    </Provider>
   );
 }
 

@@ -1,16 +1,25 @@
 import React, { useState, useCallback } from "react";
-import { ApplicationStore } from "../../state/types";
+import { ApplicationState, ApplicationUser } from "../../state/types";
 import { Modal, Button, Input } from "antd";
+import { connect } from "react-redux";
 
-const CreateGameButton = ({
+const mapStateToProps = (
+  state: ApplicationState,
+  ownProps: { socket: SocketIOClient.Socket }
+) => {
+  return {
+    user: state.user,
+    socket: ownProps.socket,
+  };
+};
+
+const ConnectedButton = ({
+  user,
   socket,
-  store,
 }: {
+  user: {} | ApplicationUser;
   socket: SocketIOClient.Socket;
-  store: ApplicationStore;
 }) => {
-  const { user } = store.getState();
-
   const [visible, setVisible] = useState(false);
 
   const showModal = () => {
@@ -52,4 +61,4 @@ const CreateGameButton = ({
   );
 };
 
-export default CreateGameButton;
+export default connect(mapStateToProps)(ConnectedButton);

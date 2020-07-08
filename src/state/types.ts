@@ -8,7 +8,7 @@ export interface ApplicationUser {
   email: string;
 }
 
-export type ApplicationGame = { name: string };
+export type ApplicationGame = { name: string; players: ApplicationUser[] };
 
 export type ApplicationUI = {
   page: ApplicationPage;

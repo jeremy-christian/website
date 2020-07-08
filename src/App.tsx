@@ -10,8 +10,15 @@ import { setUser, setGames } from "./state/actions";
 import LoginModal from "./components/LoginModal";
 import { Centered } from "./components/ApplicationLayout";
 import Home from "./components/Home/Home";
-import { ApplicationGame } from "./state/types";
+import Lobby from "./components/Lobby/Lobby";
+import {
+  ApplicationGame,
+  ApplicationPage,
+  ApplicationState,
+} from "./state/types";
 import { Provider } from "react-redux";
+import { connect } from "react-redux";
+
 // define store
 const store = createStore(reducers);
 // Log the initial state
@@ -22,6 +29,31 @@ console.log(store.getState());
 store.subscribe(() => console.log(store.getState()));
 
 const socket = io.connect("http://localhost:8000");
+
+const Content = ({
+  page,
+  socket,
+}: {
+  page: ApplicationPage;
+  socket: SocketIOClient.Socket;
+}) => (
+  <>
+    {page == "home" && <Home socket={socket} />}
+    {page == "lobby" && <Lobby socket={socket} />}
+  </>
+);
+
+const mapStateToProps = (
+  state: ApplicationState,
+  ownProps: { socket: SocketIOClient.Socket }
+) => {
+  return {
+    page: state.ui.page,
+    socket: ownProps.socket,
+  };
+};
+
+const ConnectedContent = connect(mapStateToProps)(Content);
 
 function App() {
   socket.on("pushGames", (games: ApplicationGame[]) => {
@@ -63,7 +95,7 @@ function App() {
   return (
     <Provider store={store}>
       <PageHeader ghost={false} title="Games" extra={[LogoutButton]} />
-      <Home socket={socket} />
+      <ConnectedContent socket={socket} />
     </Provider>
   );
 }

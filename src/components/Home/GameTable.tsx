@@ -3,6 +3,11 @@ import { Table, Button } from "antd";
 import { ApplicationState, ApplicationGame } from "../../state/types";
 import { connect } from "react-redux";
 import { setPage, setActiveGame } from "../../state/actions";
+import styled from "styled-components";
+
+const StyledTable = styled(Table)`
+  min-height: 100%;
+`;
 
 const ActionButton = ({
   onClick,
@@ -48,7 +53,7 @@ const mapStateToProps = (state: ApplicationState) => {
 const ConnectedTable = ({ games }: { games: ApplicationGame[] }) => {
   return (
     <>
-      <Table columns={columns} dataSource={games} />
+      <StyledTable pagination={false} columns={columns} dataSource={games} />
     </>
   );
 };

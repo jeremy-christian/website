@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useAuth0 } from "./react-auth0-spa";
-import { PageHeader, Button, Spin, Table } from "antd";
+import { PageHeader, Button, Spin, Layout } from "antd";
 import "antd/dist/antd.css";
 import styled from "styled-components";
 import io from "socket.io-client";
@@ -9,7 +9,7 @@ import reducers from "./state/reducers";
 import { setUser, setGames } from "./state/actions";
 import LoginModal from "./components/LoginModal";
 import { Centered } from "./components/ApplicationLayout";
-import Home from "./components/Home/Home";
+import { Home, HomeFooter } from "./components/Home/Home";
 import Lobby from "./components/Lobby/Lobby";
 import {
   ApplicationGame,
@@ -18,6 +18,13 @@ import {
 } from "./state/types";
 import { Provider } from "react-redux";
 import { connect } from "react-redux";
+const { Header, Footer, Content } = Layout;
+
+const StyledLayout = styled(Layout)`
+  padding: 0rem 12rem;
+  min-height: 100vh;
+  background-color: white;
+`;
 
 // define store
 const store = createStore(reducers);
@@ -30,7 +37,7 @@ store.subscribe(() => console.log(store.getState()));
 
 const socket = io.connect("http://localhost:8000");
 
-const Content = ({
+const PageContent = ({
   page,
   socket,
 }: {
@@ -40,6 +47,19 @@ const Content = ({
   <>
     {page == "home" && <Home socket={socket} />}
     {page == "lobby" && <Lobby socket={socket} />}
+  </>
+);
+
+const FooterContent = ({
+  page,
+  socket,
+}: {
+  page: ApplicationPage;
+  socket: SocketIOClient.Socket;
+}) => (
+  <>
+    {page == "home" && <HomeFooter socket={socket} />}
+    {/* {page == "lobby" && <LobbyFooter socket={socket} />} */}
   </>
 );
 
@@ -53,7 +73,8 @@ const mapStateToProps = (
   };
 };
 
-const ConnectedContent = connect(mapStateToProps)(Content);
+const ConnectedContent = connect(mapStateToProps)(PageContent);
+const ConnectedFooter = connect(mapStateToProps)(FooterContent);
 
 function App() {
   socket.on("pushGames", (games: ApplicationGame[]) => {
@@ -94,8 +115,16 @@ function App() {
 
   return (
     <Provider store={store}>
-      <PageHeader ghost={false} title="Games" extra={[LogoutButton]} />
-      <ConnectedContent socket={socket} />
+      <StyledLayout>
+        <PageHeader ghost={false} title="Games" extra={[LogoutButton]} />
+
+        <Content>
+          <ConnectedContent socket={socket} />
+        </Content>
+        <Footer>
+          <ConnectedFooter socket={socket} />
+        </Footer>
+      </StyledLayout>
     </Provider>
   );
 }

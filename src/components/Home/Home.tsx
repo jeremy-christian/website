@@ -2,11 +2,10 @@ import React from "react";
 import GameTable from "./GameTable";
 import CreateGameButton from "./CreateGameButton";
 
-const Home = ({ socket }: { socket: SocketIOClient.Socket }) => (
+export const Home = ({ socket }: { socket: SocketIOClient.Socket }) => (
   <>
     <GameTable />
-    <CreateGameButton socket={socket} />
   </>
 );
 
-export default Home;
+export const HomeFooter = CreateGameButton;

@@ -37,7 +37,7 @@ const Lobby = ({
   return (
     <>
       <p>{game?.name}</p>
-      <Table columns={columns} dataSource={game?.players} />
+      <Table pagination={false} columns={columns} dataSource={game?.players} />
       <RemoveGameButton />
     </>
   );
